@@ -1,0 +1,10 @@
+version: v1
+plugins:
+  - protocolbuffers/go:
+      out: internal/protobuf/go
+
+  - grpc/go:
+      out: internal/protobuf/go
+
+  - grpc-ecosystem/grpc-gateway:
+      out: internal/protobuf/go
