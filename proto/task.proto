@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package task.v1;
+
+option go_package = "github.com/alirezazahiri/gotasks/internal/protobuf/go/task/v1";
+
+message Task {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string status = 4; // todo | in_progress | blocked | cancelled | completed
+  string priority = 5; // low | medium | high | critical
+  int64 due_date_unix = 6;
+  int64 completed_at_unix = 7;
+  int64 created_at_unix = 8;
+  int64 updated_at_unix = 9;
+}
+
+// CREATE TASK
+message CreateTaskRequest {
+  string title = 1;
+  string description = 2;
+}
+
+message CreateTaskResponse {
+  Task task = 1;
+}
+
+// UPDATE TASK
+message UpdateTaskRequest {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string status = 4;
+  string priority = 5;
+  int64 due_date_unix = 6;
+}
+
+message UpdateTaskResponse {
+  Task task = 1;
+}
+
+// DELETE TASK
+message DeleteTaskRequest {
+  string id = 1;
+}
+
+message DeleteTaskResponse {
+  bool success = 1;
+}
+
+// GET TASK
+message GetTaskRequest {
+  string id = 1;
+}
+
+message GetTaskResponse {
+  Task task = 1;
+}
+
+service TaskService {
+  rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse);
+  rpc UpdateTask(UpdateTaskRequest) returns (UpdateTaskResponse);
+  rpc DeleteTask(DeleteTaskRequest) returns (DeleteTaskResponse);
+  rpc GetTask(GetTaskRequest) returns (GetTaskResponse);
+}

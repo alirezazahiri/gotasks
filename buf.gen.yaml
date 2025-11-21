@@ -1,10 +1,11 @@
-version: v1
+version: v2
 plugins:
-  - protocolbuffers/go:
-      out: internal/protobuf/go
-
-  - grpc/go:
-      out: internal/protobuf/go
-
-  - grpc-ecosystem/grpc-gateway:
-      out: internal/protobuf/go
+  - local: protoc-gen-go
+    out: internal/protobuf/go
+    opt: paths=source_relative
+  - local: protoc-gen-go-grpc
+    out: internal/protobuf/go
+    opt: paths=source_relative
+  - local: protoc-gen-grpc-gateway
+    out: internal/protobuf/go
+    opt: paths=source_relative
