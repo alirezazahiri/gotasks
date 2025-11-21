@@ -20,6 +20,7 @@ message Task {
 message CreateTaskRequest {
   string title = 1;
   string description = 2;
+  int64 due_date_unix = 3;
 }
 
 message CreateTaskResponse {

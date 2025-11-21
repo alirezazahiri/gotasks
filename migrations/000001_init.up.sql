@@ -4,8 +4,8 @@ CREATE TABLE tasks (
     description TEXT NOT NULL,
     status TEXT NOT NULL,
     priority TEXT NOT NULL,
-    due_date_unix BIGINT NOT NULL,
-    completed_at_unix BIGINT NOT NULL,
+    due_date_unix BIGINT,
+    completed_at_unix BIGINT,
     created_at_unix BIGINT NOT NULL,
     updated_at_unix BIGINT NOT NULL
 );

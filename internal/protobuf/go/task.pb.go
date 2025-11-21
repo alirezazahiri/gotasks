@@ -134,6 +134,7 @@ type CreateTaskRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	DueDateUnix   int64                  `protobuf:"varint,3,opt,name=due_date_unix,json=dueDateUnix,proto3" json:"due_date_unix,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -180,6 +181,13 @@ func (x *CreateTaskRequest) GetDescription() string {
 		return x.Description
 	}
 	return ""
+}
+
+func (x *CreateTaskRequest) GetDueDateUnix() int64 {
+	if x != nil {
+		return x.DueDateUnix
+	}
+	return 0
 }
 
 type CreateTaskResponse struct {
@@ -548,10 +556,11 @@ const file_task_proto_rawDesc = "" +
 	"\rdue_date_unix\x18\x06 \x01(\x03R\vdueDateUnix\x12*\n" +
 	"\x11completed_at_unix\x18\a \x01(\x03R\x0fcompletedAtUnix\x12&\n" +
 	"\x0fcreated_at_unix\x18\b \x01(\x03R\rcreatedAtUnix\x12&\n" +
-	"\x0fupdated_at_unix\x18\t \x01(\x03R\rupdatedAtUnix\"K\n" +
+	"\x0fupdated_at_unix\x18\t \x01(\x03R\rupdatedAtUnix\"o\n" +
 	"\x11CreateTaskRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\"7\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\"\n" +
+	"\rdue_date_unix\x18\x03 \x01(\x03R\vdueDateUnix\"7\n" +
 	"\x12CreateTaskResponse\x12!\n" +
 	"\x04task\x18\x01 \x01(\v2\r.task.v1.TaskR\x04task\"\xb3\x01\n" +
 	"\x11UpdateTaskRequest\x12\x0e\n" +

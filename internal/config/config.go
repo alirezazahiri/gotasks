@@ -2,7 +2,17 @@ package config
 
 type Config struct {
 	Env        string           `koanf:"env"`
+	HTTPServer HTTPServerConfig `koanf:"http_server"`
+	GRPCServer GRPCServerConfig `koanf:"grpc_server"`
 	Repository RepositoryConfig `koanf:"repository"`
+}
+
+type HTTPServerConfig struct {
+	Port string `koanf:"port"`
+}
+
+type GRPCServerConfig struct {
+	Port string `koanf:"port"`
 }
 
 type PostgresConfig struct {

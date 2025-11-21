@@ -1,5 +1,11 @@
 env: development
 
+http_server:
+  port: 8080
+
+grpc_server:
+  port: 8081
+
 repository: 
   postgres:
     username:
