@@ -6,6 +6,11 @@ type CreateTaskRequest struct {
 	DueDateUnix *int64  `json:"due_date_unix"`
 }
 
+type ListTasksRequest struct {
+	Page     int64 `json:"page" binding:"required"`
+	PageSize int64 `json:"page_size" binding:"required"`
+}
+
 type UpdateTaskRequest struct {
 	ID          string `json:"-"`
 	Title       string `json:"title"`
@@ -25,4 +30,12 @@ type TaskResponse struct {
 	CompletedAtUnix *int64 `json:"completed_at_unix,omitempty"`
 	CreatedAtUnix   int64  `json:"created_at_unix"`
 	UpdatedAtUnix   int64  `json:"updated_at_unix"`
+}
+
+type ListTasksResponse struct {
+	Tasks      []*TaskResponse `json:"tasks"`
+	Total      int64           `json:"total"`
+	Page       int64           `json:"page"`
+	PageSize   int64           `json:"page_size"`
+	TotalPages int64           `json:"total_pages"`
 }

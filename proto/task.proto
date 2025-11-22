@@ -59,9 +59,24 @@ message GetTaskResponse {
   Task task = 1;
 }
 
+// LIST TASKS
+message ListTasksRequest {
+  int64 page = 1;
+  int64 page_size = 2;
+}
+
+message ListTasksResponse {
+  repeated Task tasks = 1;
+  int64 total = 2;
+  int64 page = 3;
+  int64 page_size = 4;
+  int64 total_pages = 5;
+}
+
 service TaskService {
   rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse);
   rpc UpdateTask(UpdateTaskRequest) returns (UpdateTaskResponse);
   rpc DeleteTask(DeleteTaskRequest) returns (DeleteTaskResponse);
   rpc GetTask(GetTaskRequest) returns (GetTaskResponse);
+  rpc ListTasks(ListTasksRequest) returns (ListTasksResponse);
 }

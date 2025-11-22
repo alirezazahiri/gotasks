@@ -1,59 +1,34 @@
 package taskhandler
 
 import (
-	"time"
-
-	"github.com/alirezazahiri/gotasks/internal/entity"
-	"github.com/google/uuid"
+	pb "github.com/alirezazahiri/gotasks/internal/protobuf/go"
 )
 
-func toEntity(req *CreateTaskRequest) *entity.Task {
-	now := time.Now().Unix()
-	
-	var dueDate *int64
-	if req.DueDateUnix != nil {
-		dueDate = req.DueDateUnix
+// toResponseFromProto converts gRPC proto Task to HTTP TaskResponse
+func toResponseFromProto(protoTask *pb.Task) *TaskResponse {
+	resp := &TaskResponse{
+		ID:            protoTask.Id,
+		Title:         protoTask.Title,
+		Description:   protoTask.Description,
+		Status:        protoTask.Status,
+		Priority:      protoTask.Priority,
+		DueDateUnix:   protoTask.DueDateUnix,
+		CreatedAtUnix: protoTask.CreatedAtUnix,
+		UpdatedAtUnix: protoTask.UpdatedAtUnix,
 	}
 
-	return &entity.Task{
-		ID:          uuid.New().String(),
-		Title:       req.Title,
-		Description: req.Description,
-		Status:      "todo",
-		Priority:    "medium",
-		DueDate:     dueDate,
-		CreatedAt:   now,
-		UpdatedAt:   now,
+	if protoTask.CompletedAtUnix > 0 {
+		resp.CompletedAtUnix = &protoTask.CompletedAtUnix
 	}
+
+	return resp
 }
 
-func toEntityFromUpdate(req *UpdateTaskRequest) *entity.Task {
-	task := &entity.Task{
-		ID:          req.ID,
-		Title:       req.Title,
-		Description: req.Description,
-		Status:      req.Status,
-		Priority:    req.Priority,
-		UpdatedAt:   time.Now().Unix(),
-	}
 
-	if req.DueDateUnix != nil {
-		task.DueDate = req.DueDateUnix
+func toResponseFromProtoList(protoTasks []*pb.Task) []*TaskResponse {
+	resp := make([]*TaskResponse, len(protoTasks))
+	for i, protoTask := range protoTasks {
+		resp[i] = toResponseFromProto(protoTask)
 	}
-
-	return task
-}
-
-func toResponse(task *entity.Task) *TaskResponse {
-	return &TaskResponse{
-		ID:              task.ID,
-		Title:           task.Title,
-		Description:     task.Description,
-		Status:          task.Status,
-		Priority:        task.Priority,
-		DueDateUnix:     *task.DueDate,
-		CompletedAtUnix: task.CompletedAt,
-		CreatedAtUnix:   task.CreatedAt,
-		UpdatedAtUnix:   task.UpdatedAt,
-	}
+	return resp
 }

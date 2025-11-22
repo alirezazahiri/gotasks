@@ -30,6 +30,17 @@ func (r *Repository) GetTask(id string) (*entity.Task, error) {
 	return &task, nil
 }
 
+func (r *Repository) ListTasks(page int64, pageSize int64) ([]*entity.Task, error) {
+	offset := int((page - 1) * pageSize)
+	limit := int(pageSize)
+	var tasks []*entity.Task
+	err := r.repo.DB.Offset(offset).Limit(limit).Find(&tasks).Error
+	if err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}
+
 func (r *Repository) UpdateTask(task *entity.Task) (*entity.Task, error) {
 	err := r.repo.DB.Save(task).Scan(&task).Error
 	if err != nil {

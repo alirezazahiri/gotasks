@@ -2,7 +2,7 @@ package httpserver
 
 import (
 	"github.com/alirezazahiri/gotasks/internal/delivery/httpserver/taskhandler"
-	"github.com/alirezazahiri/gotasks/internal/services/taskservice"
+	pb "github.com/alirezazahiri/gotasks/internal/protobuf/go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,10 +10,10 @@ type Server struct {
 	router *gin.Engine
 }
 
-func New(taskService *taskservice.TaskService) *Server {
+func New(grpcClient pb.TaskServiceClient) *Server {
 	router := gin.Default()
 
-	taskHandler := taskhandler.New(taskService)
+	taskHandler := taskhandler.New(grpcClient)
 	taskGroup := router.Group("/task")
 	taskHandler.RegisterRoutes(taskGroup)
 

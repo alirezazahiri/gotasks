@@ -28,3 +28,12 @@ func toProto(task *entity.Task) *pb.Task {
 		UpdatedAtUnix:   task.UpdatedAt,
 	}
 }
+
+
+func toProtoList(tasks []*entity.Task) []*pb.Task {
+	protoTasks := make([]*pb.Task, len(tasks))
+	for i, task := range tasks {
+		protoTasks[i] = toProto(task)
+	}
+	return protoTasks
+}

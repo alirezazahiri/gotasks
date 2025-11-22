@@ -57,6 +57,22 @@ func (s *Server) GetTask(ctx context.Context, req *pb.GetTaskRequest) (*pb.GetTa
 	}, nil
 }
 
+
+func (s *Server) ListTasks(ctx context.Context, req *pb.ListTasksRequest) (*pb.ListTasksResponse, error) {
+	tasks, err := s.service.ListTasks(req.Page, req.PageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ListTasksResponse{
+		Tasks: toProtoList(tasks),
+		Total: int64(len(tasks)),
+		Page: req.Page,
+		PageSize: req.PageSize,
+		TotalPages: int64(len(tasks) / int(req.PageSize)),
+	}, nil
+}
+
 func (s *Server) UpdateTask(ctx context.Context, req *pb.UpdateTaskRequest) (*pb.UpdateTaskResponse, error) {
 	task := &entity.Task{
 		ID:          req.Id,
