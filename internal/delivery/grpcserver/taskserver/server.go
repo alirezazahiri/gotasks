@@ -2,6 +2,7 @@ package taskserver
 
 import (
 	"context"
+	"math"
 	"time"
 
 	"github.com/alirezazahiri/gotasks/internal/entity"
@@ -59,17 +60,17 @@ func (s *Server) GetTask(ctx context.Context, req *pb.GetTaskRequest) (*pb.GetTa
 
 
 func (s *Server) ListTasks(ctx context.Context, req *pb.ListTasksRequest) (*pb.ListTasksResponse, error) {
-	tasks, err := s.service.ListTasks(req.Page, req.PageSize)
+	tasks, total, err := s.service.ListTasks(req.Page, req.PageSize)
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.ListTasksResponse{
 		Tasks: toProtoList(tasks),
-		Total: int64(len(tasks)),
+		Total: total,
 		Page: req.Page,
 		PageSize: req.PageSize,
-		TotalPages: int64(len(tasks) / int(req.PageSize)),
+		TotalPages: int64(math.Ceil(float64(total) / float64(req.PageSize))),
 	}, nil
 }
 

@@ -27,12 +27,12 @@ func (s *TaskService) GetTask(id string) (*entity.Task, error) {
 }
 
 
-func (s *TaskService) ListTasks(page int64, pageSize int64) ([]*entity.Task, error) {
-	tasks, err := s.repo.ListTasks(page, pageSize)
+func (s *TaskService) ListTasks(page int64, pageSize int64) ([]*entity.Task, int64, error) {
+	tasks, total, err := s.repo.ListTasks(page, pageSize)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return tasks, nil
+	return tasks, total, nil
 }
 
 func (s *TaskService) UpdateTask(task *entity.Task) error {

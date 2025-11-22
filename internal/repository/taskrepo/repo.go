@@ -30,15 +30,20 @@ func (r *Repository) GetTask(id string) (*entity.Task, error) {
 	return &task, nil
 }
 
-func (r *Repository) ListTasks(page int64, pageSize int64) ([]*entity.Task, error) {
+func (r *Repository) ListTasks(page int64, pageSize int64) ([]*entity.Task, int64, error) {
 	offset := int((page - 1) * pageSize)
 	limit := int(pageSize)
 	var tasks []*entity.Task
-	err := r.repo.DB.Offset(offset).Limit(limit).Find(&tasks).Error
+	var total int64
+	err := r.repo.DB.Model(&entity.Task{}).Count(&total).Error
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return tasks, nil
+	err = r.repo.DB.Offset(offset).Limit(limit).Find(&tasks).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	return tasks, total, nil
 }
 
 func (r *Repository) UpdateTask(task *entity.Task) (*entity.Task, error) {

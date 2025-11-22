@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	pb "github.com/alirezazahiri/gotasks/internal/protobuf/go"
+	"github.com/alirezazahiri/gotasks/pkg/envelope"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,7 +29,7 @@ func (h *Handler) RegisterRoutes(router *gin.RouterGroup) {
 func (h *Handler) CreateTask(c *gin.Context) {
 	var req CreateTaskRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		envelope.ValidationError(c, "Invalid request data", err.Error())
 		return
 	}
 
@@ -42,11 +43,11 @@ func (h *Handler) CreateTask(c *gin.Context) {
 
 	resp, err := h.grpcClient.CreateTask(context.Background(), grpcReq)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		envelope.InternalServerError(c, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusCreated, toResponseFromProto(resp.Task))
+	envelope.Created(c, toResponseFromProto(resp.Task))
 }
 
 func (h *Handler) GetTask(c *gin.Context) {
@@ -54,11 +55,11 @@ func (h *Handler) GetTask(c *gin.Context) {
 
 	resp, err := h.grpcClient.GetTask(context.Background(), &pb.GetTaskRequest{Id: id})
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+		envelope.NotFound(c, "Task not found")
 		return
 	}
 
-	c.JSON(http.StatusOK, toResponseFromProto(resp.Task))
+	envelope.OK(c, toResponseFromProto(resp.Task))
 }
 
 func (h *Handler) ListTasks(c *gin.Context) {
@@ -67,12 +68,12 @@ func (h *Handler) ListTasks(c *gin.Context) {
 
 	pageInt, err := strconv.ParseInt(page, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid page"})
+		envelope.BadRequest(c, "Invalid page parameter")
 		return
 	}
 	pageSizeInt, err := strconv.ParseInt(pageSize, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid page size"})
+		envelope.BadRequest(c, "Invalid page_size parameter")
 		return
 	}
 
@@ -83,17 +84,18 @@ func (h *Handler) ListTasks(c *gin.Context) {
 
 	resp, err := h.grpcClient.ListTasks(context.Background(), grpcReq)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		envelope.InternalServerError(c, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"tasks":       toResponseFromProtoList(resp.Tasks),
-		"total":       resp.Total,
-		"page":        resp.Page,
-		"page_size":   resp.PageSize,
-		"total_pages": resp.TotalPages,
-	})
+	pagination := &envelope.Pagination{
+		Page:       resp.Page,
+		PageSize:   resp.PageSize,
+		Total:      resp.Total,
+		TotalPages: resp.TotalPages,
+	}
+
+	envelope.SuccessWithPagination(c, http.StatusOK, toResponseFromProtoList(resp.Tasks), pagination)
 }
 
 func (h *Handler) UpdateTask(c *gin.Context) {
@@ -101,7 +103,7 @@ func (h *Handler) UpdateTask(c *gin.Context) {
 
 	var req UpdateTaskRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		envelope.ValidationError(c, "Invalid request data", err.Error())
 		return
 	}
 
@@ -118,11 +120,11 @@ func (h *Handler) UpdateTask(c *gin.Context) {
 
 	resp, err := h.grpcClient.UpdateTask(context.Background(), grpcReq)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		envelope.InternalServerError(c, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, toResponseFromProto(resp.Task))
+	envelope.OK(c, toResponseFromProto(resp.Task))
 }
 
 func (h *Handler) DeleteTask(c *gin.Context) {
@@ -130,9 +132,9 @@ func (h *Handler) DeleteTask(c *gin.Context) {
 
 	resp, err := h.grpcClient.DeleteTask(context.Background(), &pb.DeleteTaskRequest{Id: id})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		envelope.InternalServerError(c, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": resp.Success})
+	envelope.OK(c, gin.H{"deleted": resp.Success})
 }
